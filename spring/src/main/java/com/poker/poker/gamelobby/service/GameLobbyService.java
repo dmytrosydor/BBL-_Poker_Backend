@@ -9,6 +9,7 @@ import com.poker.poker.notifications.entities.LobbyUpdate;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class GameLobbyService {
@@ -25,12 +26,33 @@ public class GameLobbyService {
 
     public List<GameLobbyResponse> getAllLobbies() {
         return repository.findAll().stream()
-                .map(lobby -> new GameLobbyResponse(lobby.getId(), lobby.getLobbyName(), lobby.getPlayerCount()))
+                .map(lobby -> new GameLobbyResponse(lobby.getId(), lobby.getLobbyName(), lobby.getPlayerCount(), lobby.getPlayers()))
                 .collect(Collectors.toList());
     }
 
     public LobbyUpdate processUpdate(LobbyUpdateRequest request){
         return new LobbyUpdate();
     }
+
+    public GameLobby joinLobby(Long lobbyId, String playerName) {
+        Optional<GameLobby> lobbyOpt = repository.findById(lobbyId);
+        if (lobbyOpt.isPresent()) {
+            GameLobby lobby = lobbyOpt.get();
+            lobby.addPlayer(playerName);
+            return repository.save(lobby);
+        }
+        throw new RuntimeException("Lobby not found");
+    }
+
+    public GameLobby leaveLobby(Long lobbyId, String playerName) {
+        Optional<GameLobby> lobbyOpt = repository.findById(lobbyId);
+        if (lobbyOpt.isPresent()) {
+            GameLobby lobby = lobbyOpt.get();
+            lobby.removePlayer(playerName);
+            return repository.save(lobby);
+        }
+        throw new RuntimeException("Lobby not found");
+    }
 }
+
 

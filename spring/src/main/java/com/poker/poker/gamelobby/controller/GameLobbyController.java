@@ -24,9 +24,21 @@ public class GameLobbyController {
         return ResponseEntity.ok(createdLobby);
     }
 
-    @GetMapping("/get_all")
+    @GetMapping("/get-all")
     public ResponseEntity<List<GameLobbyResponse>> getAllGameLobbies() {
         List<GameLobbyResponse> lobbies = service.getAllLobbies();
         return ResponseEntity.ok(lobbies);
+    }
+
+    @PostMapping("/join/{lobbyId}")
+    public ResponseEntity<GameLobby> joinLobby(@PathVariable Long lobbyId, @RequestParam String playerName) {
+        GameLobby updatedLobby = service.joinLobby(lobbyId, playerName);
+        return ResponseEntity.ok(updatedLobby);
+    }
+
+    @PostMapping("/leave/{lobbyId}")
+    public ResponseEntity<GameLobby> leaveLobby(@PathVariable Long lobbyId, @RequestParam String playerName) {
+        GameLobby updatedLobby = service.leaveLobby(lobbyId, playerName);
+        return ResponseEntity.ok(updatedLobby);
     }
 }
