@@ -1,16 +1,15 @@
 package com.poker.poker.gamelobby.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.poker.poker.game.model.Player;
 
-@Entity
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameLobby {
-    @Id
     private Long id;
     private String lobbyName;
     private Integer playerCount;
+    private List<Player> players;
 
     public GameLobby() {
         this.playerCount = 0;
@@ -19,6 +18,7 @@ public class GameLobby {
     public GameLobby(String lobbyName) {
         this.lobbyName = lobbyName;
         this.playerCount = 0;
+        this.players = new ArrayList<Player>();
     }
 
     public void setId(Long id) {
@@ -45,6 +45,12 @@ public class GameLobby {
         this.playerCount = playerCount;
     }
 
+    public List<Player> getPlayers() {
+        return players;
+    }
 
+    public void addPlayer(Player player) {
+        this.players.add(player);
+    }
 }
 

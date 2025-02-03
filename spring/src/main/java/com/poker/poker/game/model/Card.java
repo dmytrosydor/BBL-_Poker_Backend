@@ -1,27 +1,32 @@
 package com.poker.poker.game.model;
 
-public class Card {
-    private String suit;
-    private String rank;
+public class Card implements Comparable<Card> {
+    private Suit suit;
+    private Rank rank;
 
-    public Card(String suit, String rank) {
+    public Card(Suit suit, Rank rank) {
         this.suit = suit;
         this.rank = rank;
     }
 
-    public String getSuit() {
+    public Suit getSuit() {
         return suit;
     }
 
-    public void setSuit(String suit) {
+    public void setSuit(Suit suit) {
         this.suit = suit;
     }
 
-    public String getRank() {
+    public Rank getRank() {
         return rank;
     }
 
-    public void setRank(String rank) {
+    public void setRank(Rank rank) {
         this.rank = rank;
+    }
+
+    @Override
+    public int compareTo(Card other) {
+        return Integer.compare(this.rank.ordinal(), other.rank.ordinal());
     }
 }

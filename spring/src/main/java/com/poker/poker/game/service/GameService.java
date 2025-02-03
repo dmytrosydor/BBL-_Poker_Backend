@@ -13,12 +13,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GameService {
     private final Map<UUID, GameState> gameStore = new ConcurrentHashMap<>();
 
-    public GameState createGame(List<Player> players) {
+    public GameState createGame(List<PlayerInGame> players) {
         UUID gameId = UUID.randomUUID();
         Deck deck = new Deck();
         deck.shuffle();
+        List<Card> cards = new ArrayList<>();
 
-        GameState gameState = new GameState(gameId, players, GamePhase.WAITING, deck);
+        GameState gameState = new GameState(gameId, players, GamePhase.WAITING, deck, cards);
 
         gameStore.put(gameId, gameState);
 
@@ -56,15 +57,15 @@ public class GameService {
             return new PlayerActionResponse(false, "Game not found", null);
         }
 
-        Optional<Player> playerOptional = gameState.getPlayers().stream()
-                .filter(player -> player.getId().equals(playerId))
+        Optional<PlayerInGame> playerOptional = gameState.getPlayers().stream()
+                .filter(player -> player.getPlayer().getId().equals(playerId))
                 .findFirst();
 
         if (playerOptional.isEmpty()) {
             return new PlayerActionResponse(false, "Player not found", gameState);
         }
 
-        Player player = playerOptional.get();
+        PlayerInGame player = playerOptional.get();
 
         switch (action) {
             case PLACE_BET:
@@ -78,32 +79,35 @@ public class GameService {
         }
     }
     // Обробка ставки
-    private PlayerActionResponse handlePlaceBet(GameState gameState, Player player, int amount) {
+    private PlayerActionResponse handlePlaceBet(GameState gameState, PlayerInGame player, int amount) {
         if (amount > player.getBalance()) {
             return new PlayerActionResponse(false, "Insufficient balance", gameState);
         }
 
         player.setBalance(player.getBalance() - amount);
         gameState.addToPot(amount);
-        gameState.updatePlayerAction(player.getId(), PlayerAction.PLACE_BET);
+        gameState.updatePlayerAction(player.getPlayer().getId(), PlayerAction.PLACE_BET);
 
         return new PlayerActionResponse(true, "Bet placed successfully", gameState);
     }
 
     // Обробка фолду
-    private PlayerActionResponse handleFold(GameState gameState, Player player) {
-        gameState.updatePlayerAction(player.getId(), PlayerAction.FOLD);
+    private PlayerActionResponse handleFold(GameState gameState, PlayerInGame player) {
+        gameState.updatePlayerAction(player.getPlayer().getId(), PlayerAction.FOLD);
         return new PlayerActionResponse(true, "Player folded", gameState);
     }
 
     // Обробка витягування карт
-    private PlayerActionResponse handleDrawCard(GameState gameState, Player player) {
+    private PlayerActionResponse handleDrawCard(GameState gameState, PlayerInGame player) {
         if (!gameState.getPhase().equals(GamePhase.DRAW)) {
             return new PlayerActionResponse(false, "Cannot draw cards in this phase", gameState);
         }
 
         List<Card> drawnCards = gameState.getDeck().drawCards(1);
-        player.addCards(drawnCards);
+
+        for (Card card : drawnCards) {
+            player.addCards(card);
+        }
 
         return new PlayerActionResponse(true, "Card drawn successfully", gameState);
     }

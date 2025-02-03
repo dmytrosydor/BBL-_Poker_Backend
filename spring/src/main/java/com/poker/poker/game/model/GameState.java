@@ -7,21 +7,21 @@ import java.util.UUID;
 
 public class GameState {
     private UUID gameId;
-    private List<Player> players;
+    private List<PlayerInGame> players;
     private GamePhase phase;
     private Deck deck;
-    private Map<UUID, List<Card>> playerHands;
     private Map<UUID, Integer> playerBets;
     private int pot;
+    private List<Card> communityCards;
 
-    public GameState(UUID gameId, List<Player> players, GamePhase phase, Deck deck) {
+    public GameState(UUID gameId, List<PlayerInGame> players, GamePhase phase, Deck deck, List<Card> communityCards) {
         this.gameId = gameId;
         this.players = players;
         this.phase = phase;
         this.deck = deck;
-        this.playerHands = new HashMap<>();
         this.playerBets = new HashMap<>();
         this.pot = 0;
+        this.communityCards = communityCards;
     }
 
     public UUID getGameId() {
@@ -32,11 +32,11 @@ public class GameState {
         this.gameId = gameId;
     }
 
-    public List<Player> getPlayers() {
+    public List<PlayerInGame> getPlayers() {
         return players;
     }
 
-    public void setPlayers(List<Player> players) {
+    public void setPlayers(List<PlayerInGame> players) {
         this.players = players;
     }
 
@@ -56,10 +56,6 @@ public class GameState {
         this.deck = deck;
     }
 
-    public Map<UUID, List<Card>> getPlayerHands() {
-        return playerHands;
-    }
-
     public Map<UUID, Integer> getPlayerBets() {
         return playerBets;
     }
@@ -72,12 +68,13 @@ public class GameState {
         this.pot += amount;
     }
 
-
-
     private Map<UUID, PlayerAction> playerActions = new HashMap<>();
 
     public void updatePlayerAction(UUID playerId, PlayerAction action) {
         this.playerActions.put(playerId, action);
     }
 
+    public List<Card> getCommunityCards() {
+        return communityCards;
+    }
 }

@@ -22,7 +22,7 @@ public class GameController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<GameState> createGame(@RequestBody List<Player> players) {
+    public ResponseEntity<GameState> createGame(@RequestBody List<PlayerInGame> players) {
         GameState newGame = gameService.createGame(players);
         return ResponseEntity.ok(newGame);
     }
